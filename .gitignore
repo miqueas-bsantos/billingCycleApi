@@ -1,4 +1,4 @@
+__pycache__
+*.cpython-37.pyc
 env/*
-env
-__pycache__/
-*.pyc
+

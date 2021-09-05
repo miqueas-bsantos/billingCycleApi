@@ -24,8 +24,9 @@ class Debit(BaseModel):
     status: str
 
 class BillingCycleCreate(BaseModel):
+    id: Optional[int]
     name: str
     month: int
     year: int
-    debits: List[Optional[Debit]]
-    credits: List[Optional[Credit]]
+    debits: List[Optional[Debit]] = []
+    credits: List[Optional[Credit]] = []

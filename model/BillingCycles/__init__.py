@@ -29,7 +29,22 @@ class BilligCycle(Base):
         db.add_all(self.debits)
         db.add_all(self.credits)
         db.add(self)
-        db.commit()        
+        db.commit()
+
+    def update(self, db: Session) -> None:
+        item = db.query(BilligCycle).filter(BilligCycle.id == self.id).first()
+        if item:
+            item.month = self.month
+            item.year = self.year
+            item.name = self.name
+            db.commit()
+
+    def delete_by_id(self, db: Session, id: int) -> None:
+        item = db.query(BilligCycle).filter(BilligCycle.id == id).first()
+        if item:
+            db.delete(item)
+            db.commit()
+
 
 class Credits(Base):
     __tablename__="TB_CREDITS"

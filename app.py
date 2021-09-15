@@ -3,7 +3,9 @@ from routes import TodoRoutes, BillingCyclesRoutes
 from database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 
+
 app = FastAPI(docs_url="/billingCycles/docs", redoc_url=None)
+
 
 app.add_middleware(
     CORSMiddleware,

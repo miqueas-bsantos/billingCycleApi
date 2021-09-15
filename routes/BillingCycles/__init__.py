@@ -7,13 +7,17 @@ from model import (
      DebitModel,
      BillingCyclesModel
 )
-from typing import Dict, Optional
+from services import Cognito
+from typing import Any, Dict, Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
 from database import SessionLocal
+from fastapi.security import OAuth2PasswordBearer
 
 router  = APIRouter()
 security = HTTPBasic()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost/dev/api/user/authentication")
 
 # Dependency
 def get_db():
@@ -23,6 +27,22 @@ def get_db():
     finally:
         db.close()
 
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    user = Cognito().get_user(token)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user
+
+async def get_current_active_user(current_user: Optional[Any] = Depends(get_current_user)):
+    # if current_user.disabled:
+    #     raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+        
 @router.post("/billingCycles", description="Save credits or debits")
 async def create_billing_cycle(billingCycle: ModelSchemas.BillingCycleCreate, db: Session = Depends(get_db)):
     response = {
@@ -100,7 +120,7 @@ async def delete_billing_cycle(id: int, db: Session = Depends(get_db)):
         )
 
 @router.get("/billingCycles", description="Save credits or debits")
-async def get_billing_cycle(db: Session = Depends(get_db)):
+async def get_billing_cycle(db: Session = Depends(get_db), token: str = Depends(get_current_active_user)):
     response = {
         "statusCode": 200,
         "data": [],

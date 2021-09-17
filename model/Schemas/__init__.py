@@ -14,11 +14,13 @@ class Todo(BaseModel):
         orm_mode = True
 
 class Credit(BaseModel):
+    id: Optional[int]
     name: str
     value: float
-    status: str
+    # status: str
 
 class Debit(BaseModel):
+    id: Optional[int]
     name: str
     value: float
     status: str
